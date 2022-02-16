@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "boattweaker",
+  "version": "${version}",
+  "name": "BoatTweaker",
+  "description": "",
+  "authors": [
+    "taeko_chan"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/BoatTweaker/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "ch.taeko.BoatTweaker.client.BoatTweakerClient"
+    ],
+    "main": [
+      "ch.taeko.BoatTweaker.BoatTweaker"
+    ]
+  },
+  "mixins": [
+    "BoatTweaker.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.12.12",
+    "fabric": "*",
+    "minecraft": "1.18"
+  }
+}
