@@ -1,22 +1,22 @@
 {
-  "schemaVersion": 1,
-  "id": "boattweaker",
+  "schemaVersion": 1.1,
+  "id": "TCBoatTweaker",
   "version": "${version}",
-  "name": "BoatTweaker",
-  "description": "",
+  "name": "TCBoatTweaker",
+  "description": "Allows boats to drive up blue & packed ice blocks. Intended for use on the Taeko & Co Minecraft Server.",
   "authors": [
     "taeko_chan"
   ],
   "contact": {},
   "license": "MIT",
-  "icon": "assets/BoatTweaker/icon.png",
+  "icon": "assets/TCBoatTweaker/tcicon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
       "ch.taeko.BoatTweaker.client.BoatTweakerClient"
     ],
     "main": [
-      "ch.taeko.BoatTweaker.BoatTweaker"
+      "ch.taeko.BoatTweaker.TCBoatTweaker"
     ]
   },
   "mixins": [
@@ -25,6 +25,6 @@
   "depends": {
     "fabricloader": ">=0.12.12",
     "fabric": "*",
-    "minecraft": "1.18"
+    "minecraft": "1.18.x"
   }
 }
