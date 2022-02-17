@@ -1,5 +1,6 @@
 package ch.taeko.BoatTweaker.mixin;
 
+import ch.taeko.BoatTweaker.BlockStateHeight;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -11,12 +12,16 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Mixin(BoatEntity.class)
 public abstract class BoatMixin extends Entity {
 
     @Shadow
     @Nullable
     public abstract Entity getPrimaryPassenger();
+
 
     public BoatMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -28,48 +33,37 @@ public abstract class BoatMixin extends Entity {
             Entity driver = this.getPrimaryPassenger();
 
             // set search distance depending on speed, 20.71 is a rough multiplier to get m/s
+            // 0.21 = t to block that needs to be jumped over
             double vms = 20.71 * Math.sqrt(Math.pow(+this.getVelocity().x,2) + (Math.pow(+this.getVelocity().z,2)));
             double offset = Math.ceil(0.21 * vms);
 
             // this is terrible, will fix asap
-            BlockState block1 =
-                    world.getBlockState(new BlockPos(driver.getX() + offset,
-                            Math.ceil(driver.getY()), driver.getZ() + offset));
-            BlockState block1p =
-                    world.getBlockState(new BlockPos(driver.getX() + offset,
-                            Math.ceil(driver.getY()) + 1, driver.getZ() + offset));
+            List<BlockStateHeight> targetBlocks = new ArrayList<>();
 
-            BlockState block2 =
-                    world.getBlockState(new BlockPos(driver.getX() - offset,
-                            Math.ceil(driver.getY()), driver.getZ() - offset));
-            BlockState block2p =
-                    world.getBlockState(new BlockPos(driver.getX() - offset,
-                            Math.ceil(driver.getY()) + 1, driver.getZ() - offset));
+            targetBlocks.add(new BlockStateHeight(
+                    world.getBlockState(new BlockPos(driver.getX() + offset, Math.ceil(driver.getY()), driver.getZ() + offset)),
+                    new BlockPos(driver.getX() + offset, 1 + Math.ceil(driver.getY()), driver.getZ() + offset)
+            ));
+            targetBlocks.add(new BlockStateHeight(
+                    world.getBlockState(new BlockPos(driver.getX() - offset, Math.ceil(driver.getY()), driver.getZ() - offset)),
+                    new BlockPos(driver.getX() - offset, 1 + Math.ceil(driver.getY()), driver.getZ() - offset)
+            ));
+            targetBlocks.add(new BlockStateHeight(
+                    world.getBlockState(new BlockPos(driver.getX() - offset, Math.ceil(driver.getY()), driver.getZ() + offset)),
+                    new BlockPos(driver.getX() - offset, 1 + Math.ceil(driver.getY()), driver.getZ() + offset)
+            ));
+            targetBlocks.add(new BlockStateHeight(
+                    world.getBlockState(new BlockPos(driver.getX() + offset, Math.ceil(driver.getY()), driver.getZ() - offset)),
+                    new BlockPos(driver.getX() + offset, 1 + Math.ceil(driver.getY()), driver.getZ() - offset)
+            ));
 
-            BlockState block3 =
-                    world.getBlockState(new BlockPos(driver.getX() - offset,
-                            Math.ceil(driver.getY()), driver.getZ() + offset));
-            BlockState block3p =
-                    world.getBlockState(new BlockPos(driver.getX() - offset,
-                            Math.ceil(driver.getY()) + 1, driver.getZ() + offset));
-
-            BlockState block4 =
-                    world.getBlockState(new BlockPos(driver.getX() + offset,
-                            Math.ceil(driver.getY()), driver.getZ() - offset));
-            BlockState block4p =
-                    world.getBlockState(new BlockPos(driver.getX() + offset,
-                            Math.ceil(driver.getY()) + 1, driver.getZ() - offset));
-
-            if ((block1.getBlock().getSlipperiness() > 0.8 && block1p.isAir())
-                    || (block2.getBlock().getSlipperiness() > 0.8 && block2p.isAir())
-                    || (block3.getBlock().getSlipperiness() > 0.8 && block3p.isAir())
-                    || (block4.getBlock().getSlipperiness() > 0.8 && block4p.isAir())) {
-
-                double d = 0.229F;
-                // J U M P Y B O A T S
-                Vec3d vec3d = this.getVelocity();
-                this.setVelocity(vec3d.x, d, vec3d.z);
-
+            for (BlockStateHeight b : targetBlocks) {
+                if (b.blockState.getBlock().getSlipperiness() > 0.8 && world.getBlockState(b.blockPos).isAir()) {
+                    // = around a bit more than 1 block
+                    double d = 0.229F; // 0.229
+                    Vec3d vec3d = this.getVelocity();
+                    this.setVelocity(vec3d.x, d, vec3d.z);
+                }
             }
         }
     }

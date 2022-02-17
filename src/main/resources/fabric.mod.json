@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1.1,
-  "id": "TCBoatTweaker",
+  "schemaVersion": 1,
+  "id": "tcboattweaker",
   "version": "${version}",
   "name": "TCBoatTweaker",
   "description": "Allows boats to drive up blue & packed ice blocks. Intended for use on the Taeko & Co Minecraft Server.",
